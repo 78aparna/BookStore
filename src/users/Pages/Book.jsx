@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../../components/Footer'
 import { FaBars } from 'react-icons/fa'
@@ -6,10 +6,19 @@ import { Link } from 'react-router-dom'
 
 function Book() {
   const [showCategoryList,setShowCategoryList] = useState(false)
+  const [token,setToken] = useState("")
+
+  useEffect(()=>{
+    if(sessionStorage.getItem("token")){
+      const userToken = sessionStorage.getItem("token")
+      setToken(userToken)
+    }
+    },[])
   return (
     <>
       <Header/>
-      <>
+      { token?
+        <>
       {/* login-book page */}
       <div className="flex flex-col justify-center items-center my-5">
         {/* title */}
@@ -87,7 +96,15 @@ function Book() {
         </div>
       </div>
       </>
-      {/* not login book page */}
+      :
+      <div className="w-full h-screen flex justify-center items-center flex-col">
+         {/* not login book page */}
+         <img src="https://static.vecteezy.com/system/resources/previews/000/581/808/original/lock-icon-vector-illustration.jpg" alt="lock screen" className="w-50" />
+         <p className='text-xl font-bold my-15'>Please<Link to={'/login'} className='underline text-blue-500'>Login</Link>to Explore More....</p>
+      </div>
+      
+      }
+      
       <Footer/>
     </>
   )
