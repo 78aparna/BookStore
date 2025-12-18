@@ -1,14 +1,33 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from'../components/Header'
 import Footer from"../../components/Footer"
 import { FaSearch } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { BiBorderRadius } from 'react-icons/bi'
 import { toast, ToastContainer } from 'react-toastify'
+import { getHomePageBookAPI } from '../../services/allAPI'
 
 function Home() {
   const navigate = useNavigate()
   const [searchKey,setSearchKey] = useState("")
+  const [homeBooks,setHomeBooks] = useState([])
+ 
+  console.log(homeBooks);
+  useEffect(()=>{
+    getHomeBooks()
+  },[])
+  
+  const getHomeBooks = async ()=>{
+    const result = await getHomePageBookAPI()
+    if(result.status==200){
+      setHomeBooks(result.data)
+    }else{
+      console.log(result);
+      
+    }
+  }
+
+
 
   const handleSearch = ()=>{
       if(!searchKey){
@@ -49,43 +68,25 @@ function Home() {
         {/* books row and col */}
         <div className="md:grid grid-cols-4 w-full mt-10">
           {/* duplicate book card div */}
-          <div className="shadow rounded p-3 mx-4 mb-5 md:mb-0">
-            <img width={'300px'}  height={'300px'} src="https://tse1.mm.bing.net/th/id/OIP.30w2UTuJi3O0cM-gEX-a0QHaK-?pid=Api&P=0&h=180" alt="book" />
+          {
+            homeBooks?.length>0?
+            homeBooks.map(book=>(
+              <div key={book?._id} className="shadow rounded p-3 mx-4 mb-5 md:mb-0">
+            <img width={'250px'}  height={'250px'} src={book?.imageURL} alt="book" />
             <div className="flex justify-center items-center flex-col mt-4">
-              <h3 className="text-blue-600 font-vold text-lg">Author</h3>
-              <h4 className="text-lg">title</h4>
-              <h4>$Price</h4>
+              <h3 className="text-blue-600 font-vold text-lg">{book?.author} </h3>
+              <h4 className="text-lg">{book?.title} </h4>
+              <h4>{book?.discountPrice} </h4>
             </div>
             </div>
-            {/* duplicate book card div */}
-          <div className="shadow rounded p-3 mx-4">
-            <img width={'300px'}  height={'300px'} src="https://tse1.mm.bing.net/th/id/OIP.30w2UTuJi3O0cM-gEX-a0QHaK-?pid=Api&P=0&h=180" alt="book" />
-            <div className="flex justify-center items-center flex-col mt-4">
-              <h3 className="text-blue-600 font-vold text-lg">Author</h3>
-              <h4 className="text-lg">title</h4>
-              <h4>$Price</h4>
-            </div>
-            </div>
-            {/* duplicate book card div */}
-          <div className="shadow rounded p-3 mx-4">
-            <img width={'300px'}  height={'300px'} src="https://tse1.mm.bing.net/th/id/OIP.30w2UTuJi3O0cM-gEX-a0QHaK-?pid=Api&P=0&h=180" alt="book" />
-            <div className="flex justify-center items-center flex-col mt-4">
-              <h3 className="text-blue-600 font-vold text-lg">Author</h3>
-              <h4 className="text-lg">title</h4>
-              <h4>$Price</h4>
-            </div>
-            </div>
-            {/* duplicate book card div */}
-          <div className="shadow rounded p-3 mx-4">
-            <img width={'300px'}  height={'300px'} src="https://tse1.mm.bing.net/th/id/OIP.30w2UTuJi3O0cM-gEX-a0QHaK-?pid=Api&P=0&h=180" alt="book" />
-            <div className="flex justify-center items-center flex-col mt-4">
-              <h3 className="text-blue-600 font-vold text-lg">Author</h3>
-              <h4 className="text-lg">title</h4>
-              <h4>$Price</h4>
-            </div>
-            </div>
+            ))
+            :
+            <p className="font-bold">Loading.....</p>
+          }
+           
 
         </div>
+        {/* all books link */}
         <div className="text-center mt-20">
           <Link to={'/books'} className="p-3 bg-black text-white">Explore More....</Link>
         </div>

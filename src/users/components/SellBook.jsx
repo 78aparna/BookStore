@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
 import { FaPlus } from 'react-icons/fa';
 
+import { addBookAPI } from '../../services/allAPI';
+import { toast, ToastContainer } from 'react-toastify'
+
+
 function SellBook() {
   const [bookDetails,setBookDetails] = useState({
     title:"",author:"",pages:"",price:"",discountPrice:"",imageURL:"",abstract:"",language:"",publisher:"",
@@ -26,7 +30,53 @@ function SellBook() {
     setPreviewList(bookImageArray)
     
   }
-  
+  const handleUploadBook = async ()=>{
+    const{title,author,pages,price,discountPrice,imageURL,abstract,language,publisher,isbn,category,uploadImages} = bookDetails
+    if(!title||!author||!pages||!price||!discountPrice||!imageURL||!abstract||!language||!publisher||!isbn||!category||
+      uploadImages.length==0){
+        toast.info("please fill the form completely!!!!")
+      }else{
+         //api call - addbookapi
+         const token = sessionStorage.getItem("token")
+         if(token){
+          const reqHeader = {
+            "Authorization":`Bearer ${token}`
+          }
+          const reqBody = new FormData()
+          for(let key in bookDetails){
+            if(key != "uploadImages"){
+              reqBody.append(key,bookDetails[key])
+            }else{
+              bookDetails.uploadImages.forEach(imgFile=>{
+                reqBody.append("uploadImages",imgFile)
+              })
+            }
+          }
+          const result = await addBookAPI(reqBody,reqHeader)
+          console.log(result);
+          if(result.status==200){
+            toast.success("Book added successfully....")
+          }else if(result.status==401){
+            toast.warning(result.response.data)
+          }else{
+            toast.error("something went wrong!!!!")
+          }
+          resetUploadBookForm()
+         }
+      }
+      
+    
+
+  }
+
+  const resetUploadBookForm = ()=>{
+    setBookDetails({
+      title:"",author:"",pages:"",price:"",discountPrice:"",imageURL:"",abstract:"",language:"",publisher:"",
+    isbn:"",category:"",uploadImages:[]
+    })
+    setPreview("")
+    setPreviewList([])
+  }
   return (
     <div>
      <div className="p-10 my-20 mx-5 bg-gray-200">
@@ -97,12 +147,15 @@ function SellBook() {
         </div>
       </div>
       <div className="flex justify-end mt-5">
-        <button className="bg-gray-600 text-white p-2 rounded me-5 hover:bg-white 
+        <button onClick={resetUploadBookForm} className="bg-gray-600 text-white p-2 rounded me-5 hover:bg-white 
         hover:text-gray-400">RESET</button>
-        <button className="bg-blue-600 text-white p-2 rounded me-5 hover:bg-white 
-        hover:text-blue-400">SUBMIT</button>
+        <button onClick={handleUploadBook} className="bg-blue-600 text-white p-2 rounded me-5 hover:bg-white 
+        hover:text-blue-400">ADD BOOK</button>
       </div>
      </div>
+      {/* toast */}
+                 <ToastContainer position="top-center" autoClose={3000} theme="colored"/>
+             
     </div>
   )
 }

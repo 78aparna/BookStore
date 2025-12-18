@@ -3,17 +3,36 @@ import Header from '../components/Header'
 import Footer from '../../components/Footer'
 import { FaBars } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
+import { getAllBooksPageAPI } from '../../services/allAPI'
 
 function Book() {
   const [showCategoryList,setShowCategoryList] = useState(false)
   const [token,setToken] = useState("")
+  const [allBooks,setAllBooks] = useState([])
+
+  console.log(allBooks);
+  
 
   useEffect(()=>{
     if(sessionStorage.getItem("token")){
       const userToken = sessionStorage.getItem("token")
       setToken(userToken)
+      getAllBooks(userToken)
     }
     },[])
+
+    const getAllBooks = async (token)=>{
+      const reqHeader = {
+        "Authorization":`Bearer ${token}`
+      }
+      const result = await getAllBooksPageAPI(reqHeader)
+      if(result.status==200){
+        setAllBooks(result.data)
+      }else{
+        console.log(result);
+        
+      }
+    }
   return (
     <>
       <Header/>
@@ -57,41 +76,22 @@ function Book() {
         <div className="col-span-3">
           <div  className="md:grid grid-cols-4 mt-5 md:mt-0">
             {/* book card div 1 */}
-            <div className="shadow rounded p-3 mx-4 mb-5 md:mb-0">
-            <img width={'300px'}  height={'300px'} src="https://tse1.mm.bing.net/th/id/OIP.30w2UTuJi3O0cM-gEX-a0QHaK-?pid=Api&P=0&h=180" alt="book" />
+            {
+              allBooks?.length>0?
+              allBooks?.map(book=>(
+                <div key={book?._id} className="shadow rounded p-3 mx-4 mb-5 md:mb-0">
+            <img width={'300px'}  height={'300px'} src= {book?.imageURL} alt="book" />
             <div className="flex justify-center items-center flex-col mt-4">
-              <h3 className="text-blue-600 font-vold text-lg">Author</h3>
-              <h4 className="text-lg">title</h4>
-              <Link to={'/books/:id/view'} className='bg-black py-2 px-5 mt-2 text-white'>View</Link>
+              <h3 className="text-blue-600 font-vold text-lg">{book?.author}</h3>
+              <h4 className="text-lg">{book?.title.slice(0,9)}....</h4>
+              <Link to={`/books/${book?._id}/view`}className='bg-black py-2 px-5 mt-2 text-white'>View</Link>
             </div>
             </div>
-            {/* book card div 2 */}
-            <div className="shadow rounded p-3 mx-4 mb-5 md:mb-0">
-            <img width={'300px'}  height={'300px'} src="https://tse1.mm.bing.net/th/id/OIP.30w2UTuJi3O0cM-gEX-a0QHaK-?pid=Api&P=0&h=180" alt="book" />
-            <div className="flex justify-center items-center flex-col mt-4">
-              <h3 className="text-blue-600 font-vold text-lg">Author</h3>
-              <h4 className="text-lg">title</h4>
-              <Link to={'/books/:id/view'} className='bg-black py-2 px-5 mt-2 text-white'>View</Link>
-            </div>
-            </div>
-            {/* book card div 3 */}
-            <div className="shadow rounded p-3 mx-4 mb-5 md:mb-0">
-            <img width={'300px'}  height={'300px'} src="https://tse1.mm.bing.net/th/id/OIP.30w2UTuJi3O0cM-gEX-a0QHaK-?pid=Api&P=0&h=180" alt="book" />
-            <div className="flex justify-center items-center flex-col mt-4">
-              <h3 className="text-blue-600 font-vold text-lg">Author</h3>
-              <h4 className="text-lg">title</h4>
-              <Link to={'/books/:id/view'} className='bg-black py-2 px-5 mt-2 text-white'>View</Link>
-            </div>
-            </div>
-            {/* book card div 4 */}
-            <div className="shadow rounded p-3 mx-4 mb-5 md:mb-0">
-            <img width={'300px'}  height={'300px'} src="https://tse1.mm.bing.net/th/id/OIP.30w2UTuJi3O0cM-gEX-a0QHaK-?pid=Api&P=0&h=180" alt="book" />
-            <div className="flex justify-center items-center flex-col mt-4">
-              <h3 className="text-blue-600 font-vold text-lg">Author</h3>
-              <h4 className="text-lg">title</h4>
-              <Link to={'/books/:id/view'} className='bg-black py-2 px-5 mt-2 text-white'>View</Link>
-            </div>
-            </div>
+              ))
+              :
+              <p className="font-bold">Loading....</p>
+            }
+            
           </div>
         </div>
       </div>
