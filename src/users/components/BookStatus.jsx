@@ -50,7 +50,7 @@ function BookStatus() {
            </div>
         </div>
         <div>
-          <img className='w-50' src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg" alt="book" />
+          <img className='w-50' src={book?.imageURL} alt="book" />
          <div className="flex justify-end"><button className="p-2 bg-red-600 text-white mt-5">DELETE</button></div>
         </div>
         

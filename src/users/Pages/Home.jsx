@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from'../components/Header'
 import Footer from"../../components/Footer"
 import { FaSearch } from 'react-icons/fa'
@@ -6,10 +6,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { BiBorderRadius } from 'react-icons/bi'
 import { toast, ToastContainer } from 'react-toastify'
 import { getHomePageBookAPI } from '../../services/allAPI'
+import { searchContext } from '../../contextAPI/ShareContext'
 
 function Home() {
   const navigate = useNavigate()
-  const [searchKey,setSearchKey] = useState("")
+  //const [searchKey,setSearchKey] = useState("")
+  const {searchKey,setSearchKey} = useContext(searchContext)
   const [homeBooks,setHomeBooks] = useState([])
  
   console.log(homeBooks);
