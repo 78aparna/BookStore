@@ -38,3 +38,7 @@ export const getAllUserBooksAPI = async (reqHeader)=>{
 export const getAllUserBoughtBooksAPI = async (reqHeader)=>{
     return await commonAPI("GET",`${serverURL}/user-books/bought`,{},reqHeader)
 }
+//books/:id/view :get request by when view page loads
+export const viewBookAPI = async (reqHeader,id)=>{
+    return await commonAPI("GET",`${serverURL}/books/${id}/view`,{},reqHeader)
+}
