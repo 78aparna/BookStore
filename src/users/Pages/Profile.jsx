@@ -6,6 +6,7 @@ import Edit from '../components/Edit'
 import Purchase from '../components/Purchase'
 import BookStatus from '../components/BookStatus'
 import SellBook from '../components/SellBook'
+import serverURL from "../../services/serverURL"
 function Profile() {
   const [tab,setTab] = useState(1)
   const [dp,setDp] = useState("")
@@ -29,7 +30,7 @@ function Profile() {
     <div style={{height:'200px'}} className="bg-black"></div>
     {/* profile image */}
     <div style={{width:'200px',height:'230px',borderRadius:'50%',marginLeft:'70px',marginTop:'-130px'}} className="bg-white">
-          <img style={{width:'200px',height:'200px',borderRadius:'50%'}} src={dp? dp:"https://www.babelio.com/users/AVT_Freida-McFadden_9897.jpg"} alt="profile" />
+          <img style={{width:'200px',height:'200px',borderRadius:'50%'}} src={dp?dp.startsWith("https://lh3.googleusercontent.com/a/ACg8ocJO34idjXffcpVma0UPmtKz_IyrMCA5mkIa77H8uFH2RT_Obw=s96-c")?dp:`${serverURL}/uploads/${dp}`:"https://a.storyblok.com/f/191576/1200x800/215e59568f/round_profil_picture_after_.webp"} alt="profile picture" />
     </div>
     {/* name with edit block */}
     <div className="md:flex justify-between items-center md:px-20 px-5 my-5">

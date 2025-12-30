@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { FaBars, FaFacebook, FaInstagram, FaPowerOff, FaUser } from 'react-icons/fa'
 import { FaAddressCard, FaXTwitter } from 'react-icons/fa6'
-import { Link } from 'react-router-dom'
-
+import { Link, useNavigate } from 'react-router-dom'
+import serverURL from '../../services/serverURL'
 function Header() {
   const [listStatus,setListStatus] = useState(false)
   const[dp,setDp] = useState("")
   const [token,setToken] = useState("")
   const[dropDown,setDropDown] = useState(false)
+  const navigate = useNavigate()
   useEffect(()=>{
     if(sessionStorage.getItem("token")){
       const userToken = sessionStorage.getItem("token")
@@ -19,6 +20,15 @@ function Header() {
 
   const menuBtnClick=()=>{
        setListStatus(!listStatus)
+  }
+
+  const logout =()=>{
+    sessionStorage.clear()
+    setToken("")
+    setDp("")
+    setDropDown(false)
+    setListStatus(false)
+    navigate('/')
   }
   return (
     <>
@@ -48,7 +58,7 @@ function Header() {
          :
          <div className="relative inline-block text-left ms-2">
           <button onClick={()=>setDropDown(!dropDown)}className='w-full bg-white px-3 py-2 shadow-xs hover:bg-gray-50'>
-            <img width={'40px'} height={`40px`} style={{borderRadius:'50%'}} src={dp?dp:"https://a.storyblok.com/f/191576/1200x800/215e59568f/round_profil_picture_after_.webp"} alt="profile picture" />
+            <img width={'40px'} height={`40px`} style={{borderRadius:'50%'}} src={dp?dp.startsWith("https://lh3.googleusercontent.com/a/ACg8ocJO34idjXffcpVma0UPmtKz_IyrMCA5mkIa77H8uFH2RT_Obw=s96-c")?dp:`${serverURL}/uploads/${dp}`:"https://a.storyblok.com/f/191576/1200x800/215e59568f/round_profil_picture_after_.webp"} alt="profile picture" />
           </button>
           {
             dropDown &&
@@ -56,7 +66,7 @@ function Header() {
             ring-1 ring-black/5 focus:outline-hidden">
               <Link to={'/user/profile'} className='px-4 py-2 text-sm text-gray-700 flex items-center'>
               <FaAddressCard className='me-2'/>Profile</Link>
-              <button  className="px-4 py-2 text-sm text-gray-700 flex items-center"><FaPowerOff className='me-2'/>Logout</button>
+              <button onClick={logout}  className="px-4 py-2 text-sm text-gray-700 flex items-center"><FaPowerOff className='me-2'/>Logout</button>
             </div>
           }
          </div>
@@ -79,7 +89,7 @@ function Header() {
          :
          <div className="relative inline-block text-left ms-2">
           <button onClick={()=>setDropDown(!dropDown)}className='w-full bg-white px-3 py-2 shadow-xs hover:bg-gray-50'>
-            <img width={'40px'} height={`40px`} style={{borderRadius:'50%'}} src={dp?dp:"https://a.storyblok.com/f/191576/1200x800/215e59568f/round_profil_picture_after_.webp"} alt="profile picture" />
+            <img width={'40px'} height={`40px`} style={{borderRadius:'50%'}} src={dp?dp.startsWith("https://lh3.googleusercontent.com/a/ACg8ocJO34idjXffcpVma0UPmtKz_IyrMCA5mkIa77H8uFH2RT_Obw=s96-c")?dp:`${serverURL}/uploads/${dp}`:"https://a.storyblok.com/f/191576/1200x800/215e59568f/round_profil_picture_after_.webp"} alt="profile picture" />
           </button>
           {
             dropDown &&
@@ -87,7 +97,7 @@ function Header() {
             ring-1 ring-black/5 focus:outline-hidden">
               <Link to={'/user/profile'} className='px-4 py-2 text-sm text-gray-700 flex items-center'>
               <FaAddressCard className='me-2'/>Profile</Link>
-              <button  className="px-4 py-2 text-sm text-gray-700 flex items-center"><FaPowerOff className='me-2'/>Logout</button>
+              <button onClick={logout}   className="px-4 py-2 text-sm text-gray-700 flex items-center"><FaPowerOff className='me-2'/>Logout</button>
             </div>
           }
          </div>

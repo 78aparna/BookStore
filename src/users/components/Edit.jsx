@@ -1,9 +1,54 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaEdit, FaPen } from 'react-icons/fa'
 import { FaX } from 'react-icons/fa6'
-
+import serverURL from '../../services/serverURL'
+import { ToastContainer, toast } from 'react-toastify';
 function Edit() {
   const [offCanvasStatus,setOffCanvasStatus] = useState(false)
+  const [userDetails,setUserDetails] = useState({
+    id:"",username:"",password:"",role:"",bio:"",picture:""
+  })
+  const [confirmPassword,setConfirmPassword] = useState("")
+  const[existingPicture,setExistingPicture] = useState("")
+  const[preview,setPreview] = useState("")
+  const[passwordMatch,setPasswordMatch]= useState("")
+
+  useEffect(()=>{
+    if(sessionStorage.getItem("user")){
+      const user =JSON.parse(sessionStorage.getItem("user"))
+      setUserDetails({...userDetails,id:user._id,username:user.username,role:user.role,bio:user.bio})
+      setExistingPicture(user.picture)
+    }
+  },[])
+
+  const checkPasswordMatch = (data)=>{
+    setConfirmPassword(data)
+    userDetails.password == data ? setPasswordMatch(true):setPasswordMatch(false)
+  } 
+
+  const resetForm = ()=>{
+    const user =JSON.parse(sessionStorage.getItem("user"))
+      setUserDetails({...userDetails,id:user._id,username:user.username,role:user.role,bio:user.bio,password:""})
+      setExistingPicture(user.picture)
+      setPreview("")
+      setConfirmPassword("")
+      setPasswordMatch(true)
+
+  }
+  const handleProfileUpdate = async ()=>{
+    const {username,password,bio,role,id,picture} = userDetails
+    if(!username || !password || !bio || !confirmPassword){
+      toast.info("Please fill the form compltetely!!!!")
+    }else{
+      alert("api call")
+    }
+  }
+
+  const handleUploadPicture = (imgFile)=>{
+    setUserDetails({...userDetails,picture:imgFile})
+    const url = URL.createObjectURL(imgFile)
+    setPreview(url)
+  }
   return (
     <div>
       <button onClick={()=>setOffCanvasStatus(true)} className="flex flex-center text-blue-600 border p-2 rounded hover:text-white 
@@ -25,36 +70,47 @@ function Edit() {
             {/* image */}
             
               <label htmlFor="uploadImg">
-                <input type="file" id='uploadImg' hidden/>
-                <img style={{width:'200px',height:'200px',borderRadius:'50%'}} src="https://www.babelio.com/users/AVT_Freida-McFadden_9897.jpg" alt="profile" />
-              </label>
+                <input onChange={e=>handleUploadPicture(e.target.files[0])} type="file" id='uploadImg' hidden/>
+                {
+                  existingPicture ?
+                  <img style={{width:'100px',height:'100px',borderRadius:'50%'}} src={preview?preview:existingPicture.startsWith("https://lh3.googleusercontent.com/a/ACg8ocJO34idjXffcpVma0UPmtKz_IyrMCA5mkIa77H8uFH2RT_Obw=s96-c")?existingPicture:`${serverURL}/uploads/${existingPicture}`} alt="profile" />
+                  :
+                 <img style={{width:'100px',height:'100px',borderRadius:'50%'}} src={preview?preview:"https://static.vecteezy.com/system/resources/previews/021/352/965/non_2x/user-icon-person-profile-avatar-with-plus-symbol-add-user-profile-icon-png.png"} alt="profile" /> 
+                }
+                 </label>
               <button style={{marginTop:'-25px'}} className='bg-yellow-300 p-2 text-white rounded'><FaPen/></button>
                           
               
             
             {/* name */}
             <div className="mt-10 mb-3 w-full px-5">
-              <input type="text" placeholder='Username' className='border border-gray-200 p-2 rounded w-full'/>
+              <input value={userDetails.username} onChange={e=>setUserDetails({...userDetails,username:e.target.value})} type="text" placeholder='Username' className='border border-gray-200 p-2 rounded w-full'/>
             </div>
             
             {/* password */}
             <div className="mb-3 w-full px-5">
-              <input type="password" placeholder='New Password' className='border border-gray-200 p-2 rounded w-full'/>
+              <input value={userDetails.password} onChange={e=>setUserDetails({...userDetails,password:e.target.value})} type="password" placeholder='New Password' className='border border-gray-200 p-2 rounded w-full'/>
             </div>
             {/* confirm pswd */}
             <div className="mb-3 w-full px-5">
-              <input type="password" placeholder='confirm Password' className='border border-gray-200 p-2 rounded w-full'/>
+              <input value={confirmPassword} onChange={e=>checkPasswordMatch(e.target.value)} type="password" placeholder='confirm Password' className='border border-gray-200 p-2 rounded w-full'/>
             </div>
+            {
+              !passwordMatch && <div className="mb-3 w-full px-5  font-bold text-red-600 text-xs">
+               *confirm password must match with new password
+            </div>
+            }
+            
             {/* bio */}
             <div className="mb-3 w-full px-5">
-              <textarea type="text" placeholder='Bio' rows={3} className='border border-gray-200 p-2 rounded w-full'/>
+              <textarea value={userDetails.bio} onChange={e=>setUserDetails({...userDetails,bio:e.target.value})} type="text" placeholder='Bio' rows={2} className='border border-gray-200 p-2 rounded w-full'/>
             </div>
             {/* button */}
             <div className="mb-3 flex justify-end px-5 w-full mt-5">
-              <button className="px-3 py-2 rounded border bg-red-600 text-white hover:bg-white
+              <button onClick={resetForm} className="px-3 py-2 rounded border bg-red-600 text-white hover:bg-white
               hover:border-red-600 hover:text-red-600">RESET</button>
-              <button className="px-3 py-2 rounded border bg-green-600 text-white hover:bg-white
-              hover:border-green-600 hover:text-green-600 ms-5">Update</button>
+              <button onClick={handleProfileUpdate} className="px-3 py-2 rounded border bg-green-600 text-white hover:bg-white
+              hover:border-green-600 hover:text-green-600 ms-5" disabled={!passwordMatch?true:false}>Update</button>
             
             </div>
           </div>
@@ -63,6 +119,9 @@ function Edit() {
         
       </div>
 }
+{/* toast */}
+      <ToastContainer position="top-center" autoClose={3000} theme="colored"/>
+    
     </div>
   )
 }
